@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Tricky Words! ⭐</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: env(safe-area-inset-top, 60px);
+  padding-bottom: env(safe-area-inset-bottom, 80px);
+  transition: background-color 0.5s;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.bg-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.bg-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.bg-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.bg-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+.bg-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+.bg-6 { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+
+.screen { display: none; text-align: center; width: 100%; max-width: 600px; padding: 20px; }
+.screen.active { display: flex; flex-direction: column; align-items: center; gap: 16px; min-height: 100%; }
+
+h1 { font-size: 3em; color: white; text-shadow: 3px 3px 6px rgba(0,0,0,0.2); }
+h2 { font-size: 1.8em; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+.subtitle { font-size: 1.3em; color: rgba(255,255,255,0.9); }
+
+.btn {
+  padding: 20px 40px;
+  font-size: 1.5em;
+  font-weight: 700;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  color: white;
+  min-width: 200px;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(0.95); }
+.btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+
+.btn-read { background: linear-gradient(135deg, #667eea, #764ba2); }
+.btn-spell { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.btn-next { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #333; }
+.btn-hear { background: linear-gradient(135deg, #4facfe, #00f2fe); color: #333; }
+.btn-check { background: linear-gradient(135deg, #fa709a, #fee140); color: #333; }
+.btn-home { background: rgba(255,255,255,0.3); font-size: 1em; padding: 12px 24px; }
+.btn-year { background: rgba(255,255,255,0.25); min-width: 160px; }
+.btn-year.selected { background: rgba(255,255,255,0.6); color: #333; }
+.btn-mic { background: linear-gradient(135deg, #f5576c, #ff6b6b); }
+.btn-mic.listening { animation: pulse 1s infinite; }
+.btn-skip { background: rgba(255,255,255,0.3); }
+
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+  50% { transform: scale(1.08); box-shadow: 0 8px 30px rgba(245,87,108,0.5); }
+  100% { transform: scale(1); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+}
+
+.word-display {
+  font-size: 5em;
+  font-weight: 800;
+  color: white;
+  text-shadow: 4px 4px 8px rgba(0,0,0,0.2);
+  min-height: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 4px;
+  padding: 20px;
+  animation: popIn 0.3s ease;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.waiting-reveal {
+  display: inline-block;
+  animation: pulse-glow 1s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+  0%, 100% { transform: scale(0.85); opacity: 0.4; text-shadow: 4px 4px 8px rgba(0,0,0,0.2); }
+  50% { transform: scale(1.1); opacity: 1; text-shadow: 0 0 30px rgba(255,255,255,0.6), 4px 4px 8px rgba(0,0,0,0.2); }
+}
+
+.spell-input {
+  font-size: 3em;
+  text-align: center;
+  padding: 15px 20px;
+  border: 4px solid rgba(255,255,255,0.6);
+  border-radius: 20px;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  width: 80%;
+  max-width: 400px;
+  outline: none;
+  letter-spacing: 4px;
+  font-weight: 700;
+}
+.spell-input::placeholder { color: rgba(255,255,255,0.5); }
+.spell-input:focus { border-color: white; background: rgba(255,255,255,0.3); }
+
+.feedback {
+  font-size: 2.5em;
+  font-weight: 700;
+  min-height: 1.3em;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.sentence-text {
+  font-size: 1.4em;
+  color: rgba(255,255,255,0.9);
+  min-height: 1.3em;
+  padding: 0 20px;
+  line-height: 1.6;
+}
+.sentence-text .highlight {
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+}
+
+.progress-bar {
+  width: 80%;
+  max-width: 400px;
+  height: 20px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: white;
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  color: rgba(255,255,255,0.9);
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.stars { font-size: 2em; min-height: 1.2em; }
+
+.float-emoji {
+  position: fixed;
+  font-size: 3em;
+  animation: floatUp 2s ease forwards;
+  pointer-events: none;
+  z-index: 100;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-300px) scale(1.5); opacity: 0; }
+}
+
+.btn-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+
+.speaker-btn {
+  font-size: 3em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+  transition: transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.speaker-btn:active { transform: scale(0.9); }
+.speaker-btn:hover { transform: scale(1.1); }
+
+.score-big {
+  font-size: 4em;
+  font-weight: 800;
+  color: white;
+  text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+}
+
+.listening-indicator {
+  font-size: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.read-layout.active {
+  justify-content: center !important;
+  gap: 0 !important;
+}
+.read-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 8px;
+  width: 100%;
+}
+.read-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding-bottom: 10px;
+}
+
+@media (max-width: 500px) {
+  h1 { font-size: 2.2em; }
+  .word-display { font-size: 3.5em; }
+  .spell-input { font-size: 2.2em; }
+  .btn { padding: 16px 30px; font-size: 1.3em; }
+  .feedback { font-size: 2em; }
+}
+</style>
+</head>
+<body class="bg-1">
+
+<!-- HOME SCREEN -->
+<div class="screen active" id="home-screen">
+  <h1>Tricky Words! ⭐</h1>
+  <p class="subtitle">Learn to read and spell</p>
+  <div class="btn-row">
+    <button class="btn btn-year selected" onclick="selectYear(1)" id="yr1-btn">Year 1</button>
+    <button class="btn btn-year" onclick="selectYear(2)" id="yr2-btn">Year 2</button>
+  </div>
+  <button class="btn btn-read" onclick="unlockAndStart('read')">📖 Read Words</button>
+  <button class="btn btn-spell" onclick="unlockAndStart('spell')">✏️ Spell Words</button>
+</div>
+
+<!-- READ SCREEN -->
+<div class="screen read-layout" id="read-screen">
+  <div class="read-top">
+    <div class="word-display" id="read-word"></div>
+    <div class="feedback" id="read-feedback">&nbsp;</div>
+    <div class="sentence-text" id="read-sentence">&nbsp;</div>
+    <div class="stars" id="read-stars">&nbsp;</div>
+  </div>
+  <div class="read-bottom">
+    <div class="progress-bar"><div class="progress-fill" id="read-progress"></div></div>
+    <div class="progress-text" id="read-count"></div>
+    <div class="btn-row">
+      <button class="btn btn-mic" id="mic-btn" onclick="tapToListen()">🎤 Say it!</button>
+      <button class="btn btn-skip" onclick="skipReadWord()">Skip ➡️</button>
+    </div>
+    <button class="btn btn-home" onclick="goHome()">🏠 Home</button>
+  </div>
+  <div class="listening-indicator" id="listen-status"></div>
+</div>
+
+<!-- SPELL SCREEN -->
+<div class="screen" id="spell-screen">
+  <h2>Spell the word!</h2>
+  <button class="speaker-btn" onclick="sayWord()" title="Hear the word again">🔊 Hear it</button>
+  <input type="text" class="spell-input" id="spell-input" placeholder="type here" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+  <div class="feedback" id="spell-feedback"></div>
+  <div class="stars" id="spell-stars"></div>
+  <div class="progress-bar"><div class="progress-fill" id="spell-progress"></div></div>
+  <div class="progress-text" id="spell-count"></div>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkSpelling()">Check ✓</button>
+    <button class="btn btn-hear" onclick="sayWord()">🔊 Again</button>
+  </div>
+  <button class="btn btn-home" onclick="goHome()">🏠 Home</button>
+</div>
+
+<!-- SCORE SCREEN -->
+<div class="screen" id="score-screen">
+  <h1>Well Done! 🎉</h1>
+  <div class="score-big" id="final-score"></div>
+  <div class="stars" id="final-stars"></div>
+  <div class="btn-row">
+    <button class="btn btn-read" onclick="startGame('read')">📖 Read Again</button>
+    <button class="btn btn-spell" onclick="startGame('spell')">✏️ Spell Again</button>
+  </div>
+  <button class="btn btn-home" onclick="goHome()">🏠 Home</button>
+</div>
+
+<script>
+const WORD_DATA = {
+  1: {
+    'the': 'The cat sat on the mat.',
+    'a': 'I saw a rainbow in the sky.',
+    'do': 'What shall we do today?',
+    'to': 'We went to the park.',
+    'today': 'Today is a lovely day.',
+    'of': 'I had a glass of water.',
+    'said': 'Mum said it was time for bed.',
+    'says': 'Dad says we can go swimming.',
+    'are': 'We are going on an adventure.',
+    'were': 'We were excited about going to the beach.',
+    'was': 'It was a sunny afternoon.',
+    'is': 'This is my favourite book.',
+    'his': 'He packed his bag for school.',
+    'has': 'She has a new puppy.',
+    'I': 'I like playing in the garden.',
+    'you': 'Can you help me, please?',
+    'your': 'Is this your coat?',
+    'they': 'They played together at break time.',
+    'be': 'I want to be a pirate.',
+    'he': 'He ran as fast as he could.',
+    'me': 'Come and sit next to me.',
+    'she': 'She loves reading stories.',
+    'we': 'We built a sandcastle at the beach.',
+    'no': 'There was no milk left.',
+    'go': 'Let\'s go to the playground.',
+    'so': 'I was so happy to see you.',
+    'by': 'We walked by the river.',
+    'my': 'This is my favourite teddy.',
+    'here': 'Come and sit here.',
+    'there': 'Look over there!',
+    'where': 'Where are my shoes?',
+    'love': 'I love you very much.',
+    'come': 'Please come and play with me.',
+    'some': 'Can I have some cake?',
+    'one': 'I have one sister.',
+    'once': 'Once upon a time there was a dragon.',
+    'ask': 'I need to ask the teacher.',
+    'friend': 'My best friend is very funny.',
+    'school': 'I like going to school.',
+    'put': 'Put your shoes by the door.',
+    'push': 'Push the door open.',
+    'pull': 'Pull the handle towards you.',
+    'full': 'My tummy is full.',
+    'house': 'We played in the tree house.',
+    'our': 'This is our classroom.'
+  },
+  2: {
+    'door': 'Please close the door behind you.',
+    'floor': 'The ball rolled across the floor.',
+    'poor': 'The poor little kitten was lost.',
+    'because': 'I stayed inside because it was raining.',
+    'find': 'Can you find your reading book?',
+    'kind': 'It\'s important to be kind to others.',
+    'mind': 'I don\'t mind which one we pick.',
+    'behind': 'The cat hid behind the sofa.',
+    'child': 'Every child deserves to play.',
+    'children': 'The children ran into the playground.',
+    'wild': 'We saw wild animals at the safari park.',
+    'climb': 'Let\'s climb to the top of the hill.',
+    'most': 'That was the most fun I\'ve ever had.',
+    'only': 'There was only one biscuit left.',
+    'both': 'Both of us wanted the same toy.',
+    'old': 'My grandad is quite old now.',
+    'cold': 'It was really cold outside today.',
+    'gold': 'The pirate found a chest of gold.',
+    'hold': 'Hold my hand when we cross the road.',
+    'told': 'Mum told me a bedtime story.',
+    'every': 'I brush my teeth every morning.',
+    'everybody': 'Everybody cheered when we scored.',
+    'even': 'It was even better than I expected.',
+    'great': 'We had a great time at the party.',
+    'break': 'Be careful not to break it.',
+    'steak': 'Dad cooked a steak for dinner.',
+    'pretty': 'The flowers in the garden are pretty.',
+    'beautiful': 'What a beautiful sunset.',
+    'after': 'We had ice cream after lunch.',
+    'fast': 'The cheetah runs really fast.',
+    'last': 'I was the last one picked for the team.',
+    'past': 'We drove past the sweet shop.',
+    'father': 'My father taught me to ride a bike.',
+    'class': 'Our class went on a trip to the museum.',
+    'grass': 'We sat on the grass for our picnic.',
+    'pass': 'Could you pass the salt, please?',
+    'plant': 'We helped plant seeds in the garden.',
+    'path': 'We walked along the path through the woods.',
+    'bath': 'I had a warm bath before bed.',
+    'hour': 'The journey took about an hour.',
+    'move': 'Help me move this table.',
+    'prove': 'I can prove that I\'m right.',
+    'improve': 'Practising helps you improve.',
+    'sure': 'Are you sure that\'s the right answer?',
+    'sugar': 'Would you like sugar in your tea?',
+    'eye': 'She has a twinkle in her eye.',
+    'could': 'I wish I could fly like a bird.',
+    'should': 'You should always try your best.',
+    'would': 'I would love to go to the zoo.',
+    'who': 'Who wants to play football?',
+    'whole': 'I ate the whole pizza!',
+    'any': 'Is there any juice left?',
+    'many': 'How many sweets have you got?',
+    'clothes': 'Put your dirty clothes in the basket.',
+    'busy': 'The town centre was very busy.',
+    'people': 'Lots of people came to the fair.',
+    'water': 'Can I have a glass of water?',
+    'again': 'Let\'s do that again!',
+    'half': 'I ate half the sandwich.',
+    'money': 'I saved my pocket money.',
+    'Mr': 'Mr Smith is our headteacher.',
+    'Mrs': 'Mrs Jones teaches music.',
+    'parents': 'My parents came to watch the school play.',
+    'Christmas': 'I love Christmas morning.'
+  }
+};
+
+const WORDS = {
+  1: Object.keys(WORD_DATA[1]),
+  2: Object.keys(WORD_DATA[2])
+};
+
+// Natural conversational prompts for showing the next word
+const PROMPTS_FIRST = [
+  "Here we go!",
+  "Let's start!",
+  "Ready?"
+];
+const PROMPTS_NEXT = [
+  "Okay, now try this one.",
+  "Right, next word!",
+  "How about this one?",
+  "Here's the next one for you.",
+  "And what about this word?",
+  "Give this one a go!",
+  "Okay, have a look at this one.",
+  "Now try this!",
+  "Let's keep going! What's this?",
+  "What do you think this one says?",
+  "Here you go, next one!",
+  "Ooh, try this one.",
+  "Can you read this one?",
+  "Alright, what's this word?",
+  "Right, here's another one."
+];
+const PROMPTS_NEARLY_DONE = [
+  "Nearly there! Try this one.",
+  "Just a few more to go!",
+  "You're almost done! What's this?",
+  "So close! Give this one a go."
+];
+const PROMPTS_LAST = [
+  "Okay, last one!",
+  "Final word! Here we go.",
+  "One more and you're all done!"
+];
+
+const CORRECT_FIRST_TRY = [
+  "Yes, that's right!",
+  "Spot on!",
+  "That's it!",
+  "You got it!",
+  "Perfect!",
+  "Well done!"
+];
+const CORRECT_SECOND_TRY = [
+  "Yes, you got there!",
+  "That's the one!",
+  "There you go!",
+  "That's right!"
+];
+
+// Wrong feedback
+const WRONG_TRY_AGAIN = [
+  "Hmm, not quite. Have another go!",
+  "Nearly! Try once more.",
+  "Not that one. Give it another try!",
+  "Close! Have one more go.",
+  "Ooh, not quite right. Try again!"
+];
+const WRONG_GIVE_ANSWER = [
+  "Not quite.",
+  "Nearly!",
+  "Good try!",
+  "Almost!"
+];
+
+// Skip
+const SKIP_PHRASES = [
+  "No worries!",
+  "That's okay!",
+  "Let's see."
+];
+
+// Screen text encouragements
+const ENCOURAGEMENTS_TEXT = [
+  '⭐ Amazing!', '🌟 Brilliant!', '🎉 Fantastic!', '💪 Super!',
+  '🏆 Champion!', '✨ Wonderful!', '🦸 Hero!', '🚀 Awesome!',
+  '👏 Great job!', '💫 Superstar!'
+];
+
+const TRY_AGAIN_TEXT = [
+  "Nearly! It's:", "Good try! It's:", "Almost! It's:", "So close! It's:"
+];
+
+const BG_CLASSES = ['bg-1', 'bg-2', 'bg-3', 'bg-4', 'bg-5', 'bg-6'];
+
+let currentYear = 1;
+let currentMode = 'read';
+let words = [];
+let wordIndex = 0;
+let score = 0;
+let totalWords = 10;
+let attempts = 0;
+let isListening = false;
+let isTransitioning = false;
+let recognition = null;
+let lastCorrectIdx = -1;
+let lastWrongIdx = -1;
+let lastPromptIdx = -1;
+
+function unlockAndStart(mode) {
+  // Unlock Web Audio context on user tap (required by iOS)
+  const ctx = getAudioCtx();
+  if (ctx.state === 'suspended') {
+    ctx.resume().then(() => startGame(mode));
+  } else {
+    startGame(mode);
+  }
+}
+
+// Pick a random item from an array, avoiding the last used index
+function pick(arr, lastRef) {
+  let idx;
+  do { idx = Math.floor(Math.random() * arr.length); } while (arr.length > 1 && idx === lastRef);
+  return { text: arr[idx], idx };
+}
+
+// Common mishearings for short/tricky words
+const ACCEPT_ALIASES = {
+  'he': ['hey', 'hee', 'heat', 'he\'s', 'here'],
+  'I': ['i', 'eye', 'aye', 'ay', 'hi'],
+  'a': ['ay', 'eh', 'hey', 'ah', 'are', 'her', 'uh'],
+  'the': ['the', 'da', 'duh', 'though', 'they'],
+  'be': ['bee', 'b', 'bea', 'being', 'me'],
+  'me': ['me', 'mee', 'my', 'knee'],
+  'we': ['wee', 'we\'re', 'whee', 'oui', 'week'],
+  'she': ['she\'s', 'shee', 'see', 'shi'],
+  'no': ['know', 'nope', 'nah', 'now'],
+  'go': ['go', 'good', 'goo', 'goat'],
+  'so': ['sew', 'show', 'soul'],
+  'do': ['dew', 'due', 'doo', 'two', 'to'],
+  'to': ['two', 'too', 'do'],
+  'by': ['bye', 'buy', 'bi', 'why'],
+  'my': ['me', 'mine', 'mai'],
+  'is': ['his', 'iz', 'as'],
+  'of': ['off', 'ov', 'love'],
+  'are': ['ah', 'our', 'r'],
+  'or': ['or', 'all', 'oar', 'awe'],
+  'one': ['won', 'want', 'wand'],
+  'you': ['yew', 'ewe', 'u'],
+  'our': ['hour', 'are', 'ah'],
+  'eye': ['i', 'aye', 'ay'],
+  'who': ['hoo', 'woo', 'boo', 'you', 'ooh', 'two'],
+  'Mr': ['mr', 'mister', 'mr.'],
+  'Mrs': ['mrs', 'misses', 'missus', 'mrs.']
+};
+
+// ---- SPEECH RECOGNITION SETUP ----
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-GB';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 5;
+  recognition.continuous = false;
+
+  recognition.onresult = (event) => {
+    isListening = false;
+    updateListenStatus('');
+    document.getElementById('mic-btn').textContent = '🎤 Say it!';
+    document.getElementById('mic-btn').classList.remove('listening');
+
+    const word = words[wordIndex].toLowerCase();
+    const aliases = (ACCEPT_ALIASES[words[wordIndex]] || ACCEPT_ALIASES[word] || []).map(a => a.toLowerCase());
+    let heard = '';
+    let matched = false;
+    
+    for (let i = 0; i < event.results[0].length; i++) {
+      const transcript = event.results[0][i].transcript.trim().toLowerCase();
+      if (!heard) heard = transcript;
+      const maxDist = word.length <= 3 ? 0 : 1;
+      const heardWords = transcript.split(/\s+/);
+      if (transcript === word || 
+          heardWords.includes(word) ||
+          levenshtein(transcript, word) <= maxDist ||
+          aliases.includes(transcript) ||
+          heardWords.some(w => aliases.includes(w))) {
+        matched = true;
+        break;
+      }
+    }
+    
+    if (matched) {
+      readCorrect();
+    } else {
+      readIncorrect(heard);
+    }
+  };
+
+  recognition.onerror = (event) => {
+    isListening = false;
+    document.getElementById('mic-btn').textContent = '🎤 Say it!';
+    document.getElementById('mic-btn').classList.remove('listening');
+    if (event.error === 'no-speech') {
+      updateListenStatus('👆 Tap the mic and try again!');
+    } else if (event.error === 'not-allowed') {
+      updateListenStatus('Please allow microphone access 🎤');
+    } else if (event.error !== 'aborted') {
+      updateListenStatus('');
+    }
+  };
+
+  recognition.onend = () => {
+    isListening = false;
+    document.getElementById('mic-btn').textContent = '🎤 Say it!';
+    document.getElementById('mic-btn').classList.remove('listening');
+  };
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({length: m + 1}, () => Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i-1] === b[j-1] 
+        ? dp[i-1][j-1] 
+        : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+function updateListenStatus(text) {
+  const el = document.getElementById('listen-status');
+  if (!el) return;
+  if (text) {
+    el.textContent = text;
+    el.classList.add('active');
+  } else {
+    el.textContent = '';
+    el.classList.remove('active');
+  }
+}
+
+function autoListen() {
+  if (!recognition || isListening || isTransitioning) return;
+  const readScreen = document.getElementById('read-screen');
+  if (!readScreen.classList.contains('active')) return;
+  
+  setTimeout(() => {
+    if (isListening || isTransitioning) return;
+    if (!readScreen.classList.contains('active')) return;
+    try {
+      isListening = true;
+      updateListenStatus('🎤 Listening...');
+      document.getElementById('mic-btn').textContent = '🎤 Listening...';
+      document.getElementById('mic-btn').classList.add('listening');
+      recognition.start();
+    } catch(e) {
+      isListening = false;
+      updateListenStatus('👆 Tap the mic button!');
+      document.getElementById('mic-btn').textContent = '🎤 Say it!';
+      document.getElementById('mic-btn').classList.remove('listening');
+    }
+  }, 300);
+}
+
+function tapToListen() {
+  if (!recognition) return;
+  if (isListening) {
+    recognition.stop();
+    return;
+  }
+  stopAudio();
+  isTransitioning = false;
+  try {
+    isListening = true;
+    updateListenStatus('🎤 Listening...');
+    document.getElementById('mic-btn').textContent = '🎤 Listening...';
+    document.getElementById('mic-btn').classList.add('listening');
+    recognition.start();
+  } catch(e) {
+    isListening = false;
+    console.warn('Recognition start failed:', e);
+  }
+}
+
+function stopListening() {
+  if (recognition && isListening) {
+    isTransitioning = true;
+    try { recognition.abort(); } catch(e) {}
+    isListening = false;
+  } else {
+    isTransitioning = true;
+  }
+}
+
+// ---- READ FEEDBACK ----
+function showSentence(word) {
+  const sentence = WORD_DATA[currentYear][word] || '';
+  const el = document.getElementById('read-sentence');
+  if (!sentence) { el.innerHTML = ''; return; }
+  const regex = new RegExp(`\\b(${word})\\b`, 'gi');
+  el.innerHTML = '"' + sentence.replace(regex, '<span class="highlight">$1</span>') + '"';
+}
+
+function speakWithSentence(feedbackFile, word, onDone) {
+  showSentence(word);
+  const sentenceFile = `audio/sentence-${word}.mp3`;
+  // Queue both clips — feedback then sentence
+  stopAudio();
+  playAudio(feedbackFile, null);
+  playAudio(sentenceFile, onDone);
+}
+
+function readCorrect() {
+  stopListening();
+  const word = words[wordIndex];
+  const msg = ENCOURAGEMENTS_TEXT[Math.floor(Math.random() * ENCOURAGEMENTS_TEXT.length)];
+  document.getElementById('read-feedback').textContent = msg;
+  
+  const advance = () => {
+    wordIndex++;
+    attempts = 0;
+    isTransitioning = false;
+    showReadWord();
+  };
+
+  if (attempts === 0) {
+    score++;
+    document.getElementById('read-stars').textContent = '⭐⭐⭐';
+    const p = pick(CORRECT_FIRST_TRY, lastCorrectIdx);
+    lastCorrectIdx = p.idx;
+    speakWithSentence(`audio/correct1-${p.idx}.mp3`, word, advance);
+  } else {
+    document.getElementById('read-stars').textContent = '⭐';
+    const p = pick(CORRECT_SECOND_TRY, lastCorrectIdx);
+    lastCorrectIdx = p.idx;
+    speakWithSentence(`audio/correct2-${p.idx}.mp3`, word, advance);
+  }
+  
+  spawnEmojis();
+}
+
+function readIncorrect(heard) {
+  stopListening();
+  attempts++;
+  const word = words[wordIndex];
+  
+  if (attempts >= 2) {
+    const tryMsg = TRY_AGAIN_TEXT[Math.floor(Math.random() * TRY_AGAIN_TEXT.length)];
+    document.getElementById('read-feedback').textContent = `${tryMsg} ${word}`;
+    const p = pick(WRONG_GIVE_ANSWER, lastWrongIdx);
+    lastWrongIdx = p.idx;
+    speakWithSentence(`audio/wrong-answer-${p.idx}.mp3`, word, () => {
+      wordIndex++;
+      attempts = 0;
+      isTransitioning = false;
+      showReadWord();
+    });
+  } else {
+    document.getElementById('read-feedback').textContent = "Not quite — try again! 💪";
+    const p = pick(WRONG_TRY_AGAIN, lastWrongIdx);
+    lastWrongIdx = p.idx;
+    speakFeedback(`audio/wrong-try-${p.idx}.mp3`, () => {
+      isTransitioning = false;
+      autoListen();
+    });
+  }
+}
+
+function skipReadWord() {
+  stopListening();
+  const word = words[wordIndex];
+  const p = pick(SKIP_PHRASES, -1);
+  document.getElementById('read-feedback').textContent = `The word was: ${word}`;
+  speakWithSentence(`audio/skip-${p.idx}.mp3`, word, () => {
+    wordIndex++;
+    attempts = 0;
+    isTransitioning = false;
+    showReadWord();
+  });
+}
+
+// ---- AUDIO PLAYBACK (Web Audio API) ----
+let audioCtx = null;
+let audioCache = {};
+let audioQueue = [];
+let audioPlaying = false;
+let currentSource = null;
+
+function getAudioCtx() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+async function fetchAudioBuffer(src) {
+  if (audioCache[src]) return audioCache[src];
+  try {
+    const resp = await fetch(src);
+    const arrayBuf = await resp.arrayBuffer();
+    const ctx = getAudioCtx();
+    const audioBuf = await ctx.decodeAudioData(arrayBuf);
+    audioCache[src] = audioBuf;
+    return audioBuf;
+  } catch(e) {
+    console.warn('Failed to load audio:', src, e);
+    return null;
+  }
+}
+
+function _playBuffer(buffer, onDone) {
+  const ctx = getAudioCtx();
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  
+  // Create gain node for consistent volume
+  const gain = ctx.createGain();
+  gain.gain.value = 1.0;
+  source.connect(gain);
+  gain.connect(ctx.destination);
+  
+  currentSource = source;
+  audioPlaying = true;
+  
+  source.onended = () => {
+    audioPlaying = false;
+    currentSource = null;
+    if (audioQueue.length > 0) {
+      const next = audioQueue.shift();
+      _playFromQueue(next.src, next.onDone);
+    } else if (onDone) {
+      onDone();
+    }
+  };
+  
+  source.start(0);
+}
+
+async function _playFromQueue(src, onDone) {
+  const buffer = await fetchAudioBuffer(src);
+  if (buffer) {
+    _playBuffer(buffer, onDone);
+  } else {
+    audioPlaying = false;
+    if (audioQueue.length > 0) {
+      const next = audioQueue.shift();
+      _playFromQueue(next.src, next.onDone);
+    } else if (onDone) {
+      onDone();
+    }
+  }
+}
+
+function playAudio(src, onDone) {
+  if (audioPlaying) {
+    audioQueue.push({ src, onDone });
+  } else {
+    audioPlaying = true;
+    _playFromQueue(src, onDone);
+  }
+}
+
+function stopAudio() {
+  audioQueue = [];
+  if (currentSource) {
+    try { currentSource.stop(); } catch(e) {}
+    currentSource = null;
+  }
+  audioPlaying = false;
+}
+
+function speakFeedback(file, onDone) {
+  playAudio(file, onDone);
+}
+
+function sayWord(onDone) {
+  if (!words[wordIndex]) return;
+  playAudio(`audio/sentence-${words[wordIndex]}.mp3`, onDone);
+}
+
+// ---- GENERAL FUNCTIONS ----
+function selectYear(year) {
+  currentYear = year;
+  document.getElementById('yr1-btn').classList.toggle('selected', year === 1);
+  document.getElementById('yr2-btn').classList.toggle('selected', year === 2);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function changeBg() {
+  const cls = BG_CLASSES[Math.floor(Math.random() * BG_CLASSES.length)];
+  document.body.className = cls;
+}
+
+function startGame(mode) {
+  currentMode = mode;
+  words = shuffle(WORDS[currentYear]).slice(0, totalWords);
+  wordIndex = 0;
+  score = 0;
+  attempts = 0;
+  lastCorrectIdx = -1;
+  lastWrongIdx = -1;
+  lastPromptIdx = -1;
+  changeBg();
+
+  if (mode === 'read') {
+    showScreen('read-screen');
+    showReadWord();
+  } else {
+    showScreen('spell-screen');
+    showSpellWord();
+  }
+}
+
+// ---- READ MODE ----
+function showReadWord() {
+  if (wordIndex >= words.length) { showScore(); return; }
+  changeBg();
+  const word = words[wordIndex];
+  const el = document.getElementById('read-word');
+  // Show pulsating question mark until intro finishes
+  el.innerHTML = '<span class="waiting-reveal">?</span>';
+  document.getElementById('read-feedback').innerHTML = '&nbsp;';
+  document.getElementById('read-sentence').innerHTML = '&nbsp;';
+  document.getElementById('read-stars').innerHTML = '&nbsp;';
+  updateProgress('read');
+
+  // Natural spoken intro
+  let promptArr, filePrefix;
+  if (wordIndex === 0) { promptArr = PROMPTS_FIRST; filePrefix = 'first'; }
+  else if (wordIndex === words.length - 1) { promptArr = PROMPTS_LAST; filePrefix = 'last'; }
+  else if (wordIndex >= words.length - 3) { promptArr = PROMPTS_NEARLY_DONE; filePrefix = 'nearly'; }
+  else { promptArr = PROMPTS_NEXT; filePrefix = 'intro'; }
+  const p = pick(promptArr, lastPromptIdx);
+  lastPromptIdx = p.idx;
+
+  // Speak the intro, THEN reveal word and start listening
+  isTransitioning = false;
+  playAudio(`audio/${filePrefix}-${p.idx}.mp3`, () => {
+    el.textContent = word;
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = 'popIn 0.3s ease';
+    isTransitioning = false;
+    autoListen();
+  });
+}
+
+// ---- SPELL MODE ----
+function showSpellWord() {
+  if (wordIndex >= words.length) { showScore(); return; }
+  changeBg();
+  const input = document.getElementById('spell-input');
+  input.value = '';
+  input.focus();
+  document.getElementById('spell-feedback').textContent = '';
+  document.getElementById('spell-stars').textContent = '';
+  attempts = 0;
+  updateProgress('spell');
+  setTimeout(() => sayWord(), 400);
+}
+
+function checkSpelling() {
+  const input = document.getElementById('spell-input');
+  const guess = input.value.trim().toLowerCase();
+  const word = words[wordIndex].toLowerCase();
+  const feedback = document.getElementById('spell-feedback');
+  const stars = document.getElementById('spell-stars');
+
+  if (!guess) { sayWord(); return; }
+  attempts++;
+
+  if (guess === word) {
+    const msg = ENCOURAGEMENTS_TEXT[Math.floor(Math.random() * ENCOURAGEMENTS_TEXT.length)];
+    feedback.textContent = msg;
+    if (attempts === 1) {
+      score++;
+      stars.textContent = '⭐⭐⭐';
+    } else {
+      stars.textContent = '⭐';
+    }
+    spawnEmojis();
+    setTimeout(() => { wordIndex++; showSpellWord(); }, 1500);
+  } else {
+    if (attempts >= 2) {
+      const tryMsg = TRY_AGAIN_TEXT[Math.floor(Math.random() * TRY_AGAIN_TEXT.length)];
+      feedback.textContent = tryMsg + ' ' + words[wordIndex];
+      input.value = '';
+      setTimeout(() => { wordIndex++; showSpellWord(); }, 2500);
+    } else {
+      feedback.textContent = "Try again! 💪";
+      input.value = '';
+      input.focus();
+      sayWord();
+    }
+  }
+}
+
+// ---- PROGRESS ----
+function updateProgress(mode) {
+  const pct = (wordIndex / words.length) * 100;
+  document.getElementById(mode + '-progress').style.width = pct + '%';
+  document.getElementById(mode + '-count').textContent = `Word ${wordIndex + 1} of ${words.length}`;
+}
+
+// ---- SCORE SCREEN ----
+function showScore() {
+  showScreen('score-screen');
+  changeBg();
+  const pct = Math.round((score / words.length) * 100);
+  document.getElementById('final-score').textContent = `${score} / ${words.length}`;
+  let starStr = '';
+  if (pct >= 90) starStr = '⭐⭐⭐⭐⭐';
+  else if (pct >= 70) starStr = '⭐⭐⭐⭐';
+  else if (pct >= 50) starStr = '⭐⭐⭐';
+  else if (pct >= 30) starStr = '⭐⭐';
+  else starStr = '⭐';
+  document.getElementById('final-stars').textContent = starStr;
+
+  // Speak the final score
+  let endFile;
+  if (pct >= 90) endFile = 'end-amazing';
+  else if (pct >= 70) endFile = 'end-great';
+  else if (pct >= 50) endFile = 'end-good';
+  else endFile = 'end-keepgoing';
+  playAudio(`audio/${endFile}.mp3`);
+
+  spawnEmojis();
+}
+
+function goHome() {
+  stopListening();
+  stopAudio();
+  isTransitioning = false;
+  showScreen('home-screen');
+  changeBg();
+}
+
+// ---- FUN EFFECTS ----
+function spawnEmojis() {
+  const emojis = ['⭐', '🌟', '✨', '🎉', '💫', '🏆', '🦄', '🌈'];
+  for (let i = 0; i < 8; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'float-emoji';
+      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      el.style.left = (Math.random() * 80 + 10) + 'vw';
+      el.style.top = (Math.random() * 40 + 50) + 'vh';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2000);
+    }, i * 150);
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && currentMode === 'spell' && 
+      document.getElementById('spell-screen').classList.contains('active')) {
+    checkSpelling();
+  }
+});
+</script>
+</body>
+</html>
