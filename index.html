@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Tricky Words! ⭐</title>
+<title>Tricky Words!</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -235,14 +235,14 @@ h2 { font-size: 1.8em; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
 
 <!-- HOME SCREEN -->
 <div class="screen active" id="home-screen">
-  <h1>Tricky Words! ⭐</h1>
+  <h1>Tricky Words!</h1>
   <p class="subtitle">Learn to read and spell</p>
   <div class="btn-row">
     <button class="btn btn-year selected" onclick="selectYear(1)" id="yr1-btn">Year 1</button>
     <button class="btn btn-year" onclick="selectYear(2)" id="yr2-btn">Year 2</button>
   </div>
-  <button class="btn btn-read" onclick="unlockAndStart('read')">📖 Read Words</button>
-  <button class="btn btn-spell" onclick="unlockAndStart('spell')">✏️ Spell Words</button>
+  <button class="btn btn-read" onclick="unlockAndStart('read')">Read Words</button>
+  <button class="btn btn-spell" onclick="unlockAndStart('spell')">Spell Words</button>
 </div>
 
 <!-- READ SCREEN -->
@@ -257,10 +257,10 @@ h2 { font-size: 1.8em; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
     <div class="progress-bar"><div class="progress-fill" id="read-progress"></div></div>
     <div class="progress-text" id="read-count"></div>
     <div class="btn-row">
-      <button class="btn btn-mic" id="mic-btn" onclick="tapToListen()">🎤 Say it!</button>
-      <button class="btn btn-skip" onclick="skipReadWord()">Skip ➡️</button>
+      <button class="btn btn-mic" id="mic-btn" onclick="tapToListen()">Say it!</button>
+      <button class="btn btn-skip" onclick="skipReadWord()">Next Word</button>
     </div>
-    <button class="btn btn-home" onclick="goHome()">🏠 Home</button>
+    <button class="btn btn-home" onclick="goHome()">Exit</button>
   </div>
   <div class="listening-indicator" id="listen-status"></div>
 </div>
@@ -268,7 +268,7 @@ h2 { font-size: 1.8em; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
 <!-- SPELL SCREEN -->
 <div class="screen" id="spell-screen">
   <h2>Spell the word!</h2>
-  <button class="speaker-btn" onclick="sayWord()" title="Hear the word again">🔊 Hear it</button>
+  <button class="speaker-btn" onclick="sayWord()" title="Hear the word again">Hear it</button>
   <input type="text" class="spell-input" id="spell-input" placeholder="type here" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
   <div class="feedback" id="spell-feedback"></div>
   <div class="stars" id="spell-stars"></div>
@@ -276,21 +276,21 @@ h2 { font-size: 1.8em; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
   <div class="progress-text" id="spell-count"></div>
   <div class="btn-row">
     <button class="btn btn-check" onclick="checkSpelling()">Check ✓</button>
-    <button class="btn btn-hear" onclick="sayWord()">🔊 Again</button>
+    <button class="btn btn-hear" onclick="sayWord()">Again</button>
   </div>
-  <button class="btn btn-home" onclick="goHome()">🏠 Home</button>
+  <button class="btn btn-home" onclick="goHome()">Exit</button>
 </div>
 
 <!-- SCORE SCREEN -->
 <div class="screen" id="score-screen">
-  <h1>Well Done! 🎉</h1>
+  <h1>Well Done!</h1>
   <div class="score-big" id="final-score"></div>
   <div class="stars" id="final-stars"></div>
   <div class="btn-row">
-    <button class="btn btn-read" onclick="startGame('read')">📖 Read Again</button>
-    <button class="btn btn-spell" onclick="startGame('spell')">✏️ Spell Again</button>
+    <button class="btn btn-read" onclick="startGame('read')">Read Again</button>
+    <button class="btn btn-spell" onclick="startGame('spell')">Spell Again</button>
   </div>
-  <button class="btn btn-home" onclick="goHome()">🏠 Home</button>
+  <button class="btn btn-home" onclick="goHome()">Exit</button>
 </div>
 
 <script>
@@ -489,9 +489,9 @@ const SKIP_PHRASES = [
 
 // Screen text encouragements
 const ENCOURAGEMENTS_TEXT = [
-  '⭐ Amazing!', '🌟 Brilliant!', '🎉 Fantastic!', '💪 Super!',
-  '🏆 Champion!', '✨ Wonderful!', '🦸 Hero!', '🚀 Awesome!',
-  '👏 Great job!', '💫 Superstar!'
+  'Amazing!', 'Brilliant!', 'Fantastic!', 'Super!',
+  'Champion!', 'Wonderful!', 'Hero!', 'Awesome!',
+  'Great job!', 'Superstar!'
 ];
 
 const TRY_AGAIN_TEXT = [
@@ -574,7 +574,7 @@ if (SpeechRecognition) {
   recognition.onresult = (event) => {
     isListening = false;
     updateListenStatus('');
-    document.getElementById('mic-btn').textContent = '🎤 Say it!';
+    document.getElementById('mic-btn').textContent = 'Say it!';
     document.getElementById('mic-btn').classList.remove('listening');
 
     const word = words[wordIndex].toLowerCase();
@@ -606,12 +606,12 @@ if (SpeechRecognition) {
 
   recognition.onerror = (event) => {
     isListening = false;
-    document.getElementById('mic-btn').textContent = '🎤 Say it!';
+    document.getElementById('mic-btn').textContent = 'Say it!';
     document.getElementById('mic-btn').classList.remove('listening');
     if (event.error === 'no-speech') {
-      updateListenStatus('👆 Tap the mic and try again!');
+      updateListenStatus('Tap the mic and try again');
     } else if (event.error === 'not-allowed') {
-      updateListenStatus('Please allow microphone access 🎤');
+      updateListenStatus('Please allow microphone access');
     } else if (event.error !== 'aborted') {
       updateListenStatus('');
     }
@@ -619,7 +619,7 @@ if (SpeechRecognition) {
 
   recognition.onend = () => {
     isListening = false;
-    document.getElementById('mic-btn').textContent = '🎤 Say it!';
+    document.getElementById('mic-btn').textContent = 'Say it!';
     document.getElementById('mic-btn').classList.remove('listening');
   };
 }
@@ -661,14 +661,14 @@ function autoListen() {
     if (!readScreen.classList.contains('active')) return;
     try {
       isListening = true;
-      updateListenStatus('🎤 Listening...');
-      document.getElementById('mic-btn').textContent = '🎤 Listening...';
+      updateListenStatus('Listening...');
+      document.getElementById('mic-btn').textContent = 'Listening...';
       document.getElementById('mic-btn').classList.add('listening');
       recognition.start();
     } catch(e) {
       isListening = false;
-      updateListenStatus('👆 Tap the mic button!');
-      document.getElementById('mic-btn').textContent = '🎤 Say it!';
+      updateListenStatus('Tap the mic button');
+      document.getElementById('mic-btn').textContent = 'Say it!';
       document.getElementById('mic-btn').classList.remove('listening');
     }
   }, 300);
@@ -684,8 +684,8 @@ function tapToListen() {
   isTransitioning = false;
   try {
     isListening = true;
-    updateListenStatus('🎤 Listening...');
-    document.getElementById('mic-btn').textContent = '🎤 Listening...';
+    updateListenStatus('Listening...');
+    document.getElementById('mic-btn').textContent = 'Listening...';
     document.getElementById('mic-btn').classList.add('listening');
     recognition.start();
   } catch(e) {
